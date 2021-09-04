@@ -1,8 +1,12 @@
-const http = require('http')
 const express = require('express')
 
+const adminRoutes = require('./routes/admin')
+const shopRoutes = require('./routes/shop')
+
 const app = express()
+app.use(express.urlencoded({ extended: false }))
 
-const server = http.createServer(app)
+app.use(adminRoutes)
+app.use(shopRoutes)
 
-server.listen(3000)
+app.listen(3000)
