@@ -9,9 +9,13 @@ router.get('/', (req, res, next) => {
   // console.log(adminData.products)
   // res.sendFile(path.join(rootDir, 'views', 'shop.html'))
   const products = adminData.products
-  res.render('shop', {
+  res.render('shop.handlebars', {
     prods: products,
-    docTitle: 'Shop'
+    docTitle: 'Shop',
+    path: '/',
+    hasProducts: products.length > 0,
+    activeShop: true,
+    productCss: true
   })
 })
 
