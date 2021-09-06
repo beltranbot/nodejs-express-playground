@@ -3,7 +3,7 @@ const path = require('path')
 
 const adminRoutes = require('./routes/admin')
 const shopRoutes = require('./routes/shop')
-const notFoundRoutes = require('./routes/not_found')
+const errorRoutes = require('./routes/error')
 
 const app = express()
 // setting up template engine
@@ -15,6 +15,6 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/admin', adminRoutes)
 app.use(shopRoutes)
-app.use(notFoundRoutes)
+app.use(errorRoutes)
 
 app.listen(3000)
