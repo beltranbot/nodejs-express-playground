@@ -9,8 +9,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "debug": "nodemon --inspect app.js",
-    "dev": "nodemon app.js"
+    "debug": "nodemon --inspect --ignore data/ app.js",
+    "dev": "nodemon app.js --ignore data/"
   },
   "repository": {
     "type": "git",
