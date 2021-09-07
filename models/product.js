@@ -1,8 +1,9 @@
 const fs = require('fs')
 const path = require('path')
+
 const filePath = path.join(path.dirname(require.main.filename), 'data', 'products.json')
 
-const getProductsFromFile = (callback) => {
+const getProductsFromFile = callback => {
   fs.readFile(filePath, (err, fileContent) => {
     if (err) {
       return callback([])
@@ -20,9 +21,10 @@ module.exports = class Product {
   }
 
   save() {
-    getProductsFromFile((products) => {
+    this.id = Math.random().toString()
+    getProductsFromFile(products => {
       products.push(this)
-      fs.writeFile(filePath, JSON.stringify(products), (err) => {
+      fs.writeFile(filePath, JSON.stringify(products), err => {
         if (err) {
           console.log(err)
         }
@@ -34,4 +36,10 @@ module.exports = class Product {
     getProductsFromFile(callback)
   }
 
+  static findById(id, callback) {
+    getProductsFromFile(products => {
+      const product = products.find(p => p.id === id)
+      callback(product)
+    })
+  }
 }
