@@ -56,4 +56,14 @@ module.exports = class Cart {
       })
     })
   }
+
+  static getCart(cb) {
+    fs.readFile(filePath, (err, fileContent) => {
+      const cart = JSON.parse(fileContent)
+      if (err) {
+        return cb(null)
+      }
+      cb(cart)
+    })
+  }
 }
