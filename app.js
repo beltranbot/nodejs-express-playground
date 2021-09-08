@@ -6,6 +6,7 @@ const shopRoutes = require('./routes/shop')
 const errorRoutes = require('./routes/error')
 
 const app = express()
+
 // setting up template engine
 app.set('view engine', 'ejs')
 app.set('views', 'views')
