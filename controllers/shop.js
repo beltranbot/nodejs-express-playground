@@ -2,12 +2,12 @@ const Product = require('../models/product')
 const Cart = require('../models/cart')
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll()
-    .then(([rows, fieldData]) => {
+  Product.findAll()
+    .then(products => {
       res.render('shop/product-list', {
-        prods: rows,
+        prods: products,
         pageTitle: 'Shop',
-        hasProducts: rows.length > 0,
+        hasProducts: products.length > 0,
         path: '/products',
       })
     })
@@ -16,7 +16,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
   const productId = req.params.productId
-  Product.findById(productId)
+  Product.findByPk(productId)
     .then(([results]) => {
         const product = results[0]
         res.render('shop/product-detail', {
@@ -29,12 +29,12 @@ exports.getProduct = (req, res, next) => {
 }
 
 exports.getIndex = (req, res, next) => {
-  Product.fetchAll()
-    .then(([rows, fieldData]) => {
+  Product.findAll()
+    .then(products => {
       res.render('shop/index', {
-        prods: rows,
+        prods: products,
         pageTitle: 'Shop',
-        hasProducts: rows.length > 0,
+        hasProducts: products.length > 0,
         path: '/'
       })
     })
@@ -62,7 +62,7 @@ exports.getCart = (req, res, next) => {
 
 exports.postCart = (req, res, next) => {
   const productId = req.body.productId
-  Product.findById(productId, product => {
+  Product.findByPk(productId, product => {
     Cart.addProduct(productId, product.price)
   })
   res.redirect('/cart')
@@ -70,7 +70,7 @@ exports.postCart = (req, res, next) => {
 
 exports.postCartDeleteProduct = (req, res, next) => {
   const productId = req.body.productId
-  Product.findById(productId, product => {
+  Product.findByPk(productId, product => {
     Cart.deleteProduct(productId, product.price)
     res.redirect('/cart')
   })

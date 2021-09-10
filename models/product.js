@@ -1,4 +1,4 @@
-const Sequelize = require('sequelize')
+const { Sequelize } = require('sequelize')
 
 const sequelize = require('../util/database')
 
@@ -16,7 +16,8 @@ const Product = sequelize.define('product', {
   },
   imageUrl: {
     type: Sequelize.STRING,
-    allowNull: false
+    allowNull: false,
+    field: 'image_url'
   },
   description: {
     type: Sequelize.STRING,
