@@ -10,7 +10,7 @@ router.get('/add-product', adminController.getAddProduct)
 
 // router.post('/edit-product', adminController.postEditProduct)
 
-// router.get('/products', adminController.getProducts)
+router.get('/products', adminController.getProducts)
 
 router.post('/product', adminController.postAddProduct)
 
