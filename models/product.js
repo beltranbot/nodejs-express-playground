@@ -2,15 +2,24 @@ const mongodb = require('mongodb')
 const { getDb } = require('../util/database')
 
 class Product {
-  constructor(title, description, imageUrl, price) {
+  constructor(title, imageUrl, price, description, id) {
     this.title = title
-    this.description = description
     this.imageUrl = imageUrl
     this.price = price
+    this.description = description
+    this._id = new mongodb.ObjectId(id)
   }
 
   save() {
     const db = getDb()
+    if (this._id) {
+      return db.collection('products')
+        .updateOne(
+          { _id: new mongodb.ObjectId(this._id) },
+          { $set: this } // mongo automatically maps this class' fields to the document to be update
+        )
+        .catch(err => console.log(err))
+    }
     return db.collection('products')
       .insertOne(this)
       .catch(err => console.log(err))
