@@ -13,9 +13,6 @@ const Cart = sequelize.define('cart', {
     type: Sequelize.INTEGER,
     field: 'user_id'
   },
-}, {
-  unique: true,
-  fields: ['user_id']
 })
 
 module.exports = Cart

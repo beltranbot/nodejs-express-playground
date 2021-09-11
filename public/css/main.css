@@ -25,10 +25,12 @@ form {
 
 .image {
   height: 20rem;
+  width: 20rem;
 }
 
 .image img {
   height: 100%;
+  width: 100%;
 }
 
 .main-header {

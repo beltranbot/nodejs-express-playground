@@ -36,7 +36,7 @@ app.use(shopRoutes)
 app.use(errorRoutes)
 
 Product.belongsTo(User, {
-  foreignKey: 'user_id',
+  foreignKey: { field: 'user_id', allowNull: false },
   constraints: true,
   onDelete: 'CASCADE'
 })
@@ -47,20 +47,12 @@ User.hasOne(Cart, {
   foreignKey: 'user_id'
 })
 Cart.belongsTo(User, {
-  foreignKey: 'user_id',
+  foreignKey: { field: 'user_id', allowNull: false },
   constraints: true,
   onDelete: 'CASCADE'
 })
-Cart.belongsToMany(Product, {
-  through: CartItem,
-  foreignKey: 'product_id',
-  otherKey: 'cart_id'
-})
-Product.belongsToMany(Cart, {
-  through: CartItem,
-  foreignKey: 'product_id',
-  otherKey: 'cart_id'
-})
+Cart.belongsToMany(Product, { through: CartItem })
+Product.belongsToMany(Cart, { through: CartItem })
 
 // sequelize.sync({ force: true })
 sequelize.sync() // force: true to force recreation
@@ -76,7 +68,7 @@ sequelize.sync() // force: true to force recreation
         user.getCart()
           .then(cart => {
             if (!cart) {
-              user.createCart()
+              user.createCart({ userId: user.id })
             }
           })
       })
@@ -84,4 +76,3 @@ sequelize.sync() // force: true to force recreation
       .catch(err => console.log(err))
   })
   .catch(err => console.log(err))
-
