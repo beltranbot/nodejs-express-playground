@@ -17,12 +17,20 @@ app.use(express.urlencoded({ extended: false }))
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use((req, res, next) => {
-  User.findById('613d276411abee55436eb951')
-    .then(user => {
-      if (user) {
+  User.fetchAll()
+    .then(users => {
+      if (users.length === 1) {
+        let user = users[0]
         req.user = new User(user.username, user.email, user.cart, user._id)
+        return next()
       }
-      next()
+      const user = new User("admin", "admin@example.com", [], null)
+      user.save()
+        .then(user => {
+          req.user = user
+          next()
+        })
+        .catch(err => console.log(err))
     })
     .catch(err => console.log(err))
 })
