@@ -47,14 +47,21 @@ exports.postEditProduct = (req, res, next) => {
   const price = req.body.price
   const description = req.body.description
   const imageUrl = req.body.imageUrl
-  const product = new Product(title, imageUrl, price, description, productId)
-  product.save()
+  Product.findById(productId)
+    .then(product => {
+      product.title = title
+      product.price = price
+      product.description = description
+      product.imageUrl = imageUrl
+      return product.save()
+    })
     .then(() => res.redirect('/admin/edit-product/' + productId + '?edit=true'))
     .catch(err => console.log(err))
+
 }
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
     .then(products => {
       res.render('admin/products', {
         prods: products,
