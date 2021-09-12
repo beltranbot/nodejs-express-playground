@@ -43,13 +43,28 @@ class User {
       .find({ _id: { $in: productIds } })
       .toArray()
       .then(products => {
-        return products.map(product => {
+        return products.
+        map(product => {
           const quantity = this.cart.items.find(i => {
             return i.productId.toString() === product._id.toString()
           }).quantity
           return {...product, quantity }
         })
       })
+      .catch(err => console.log(err))
+  }
+
+  deleteItemFromCart(productId) {
+    const updatedCartItems = this.cart.items.filter(item => {
+      return item.productId.toString() !== productId.toString()
+    })
+    const db = getDb()
+    return db
+      .collection('users')
+      .updateOne(
+        { _id: new Object(this._id) },
+        { $set: { cart: { items: updatedCartItems } } }
+      )
       .catch(err => console.log(err))
   }
 
