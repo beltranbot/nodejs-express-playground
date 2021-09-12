@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const path = require('path')
 
 const adminRoutes = require('./routes/admin')
-// const shopRoutes = require('./routes/shop')
+const shopRoutes = require('./routes/shop')
 const errorRoutes = require('./routes/error')
 // const User = require('./models/user')
 
@@ -36,7 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 // })
 
 app.use('/admin', adminRoutes)
-// app.use(shopRoutes)
+app.use(shopRoutes)
 app.use(errorRoutes)
 
 mongoose.connect('mongodb://nodejs:nodejs@mongo:27017', { dbName: 'shop' })
