@@ -14,6 +14,6 @@ router.get('/products', adminController.getProducts)
 
 router.post('/product', adminController.postAddProduct)
 
-// router.post('/delete-product', adminController.deleteProduct)
+router.post('/delete-product', adminController.deleteProduct)
 
 module.exports = router
