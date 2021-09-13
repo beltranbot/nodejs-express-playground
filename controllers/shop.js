@@ -18,10 +18,10 @@ exports.getProduct = (req, res, next) => {
   const productId = req.params.productId
   Product.findById(productId)
     .then((product) => {
-        res.render('shop/product-detail', {
-          product,
-          path: "/products",
-          pageTitle: product.title
+      res.render('shop/product-detail', {
+        product,
+        path: "/products",
+        pageTitle: product.title
       })
     })
     .catch(err => console.log(err))
@@ -104,15 +104,15 @@ exports.postOrder = (req, res, next) => {
 }
 
 exports.getOrders = (req, res, next) => {
-  req.user.getOrders()
-  .then(orders => {
-    return res.render('shop/orders', {
-      path: '/orders',
-      pageTitle: 'Your Orders',
-      orders
+  Order.find({ "user.userId": req.user._id })
+    .then(orders => {
+      return res.render('shop/orders', {
+        path: '/orders',
+        pageTitle: 'Your Orders',
+        orders
+      })
     })
-  })
-  .catch(err => console.log(err))
+    .catch(err => console.log(err))
 }
 
 exports.getCheckout = (req, res, next) => {
