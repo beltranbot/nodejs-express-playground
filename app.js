@@ -31,27 +31,7 @@ app.use(session({
   store
 }))
 
-app.use((req, res, next) => {
-  User.findOne()
-    .then(user => {
-      if (!user) {
-        let user = new User({
-          username: 'admin',
-          email: 'admin@example.com',
-          cart: {
-            items: []
-          }
-        })
-        return user.save()
-      }
-      return user
-    })
-    .then(user => {
-      req.user = user
-      next()
-    })
-    .catch(err => console.log(err))
-})
+
 
 app.use('/admin', adminRoutes)
 app.use(shopRoutes)
@@ -64,4 +44,3 @@ mongoose.connect(MONGO_DB_URI, { dbName: 'shop' })
     app.listen(3000)
   })
   .catch(err => console.log(err))
-
