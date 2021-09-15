@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const path = require('path')
 const MongoDBStore = require('connect-mongodb-session')(session)
 const csrf = require('csurf')
+const flash = require('connect-flash')
 
 const User = require('./models/user')
 const adminRoutes = require('./routes/admin')
@@ -33,6 +34,7 @@ app.use(session({
   store
 }))
 app.use(csrfProtection)
+app.use(flash())
 
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isLoggedIn
