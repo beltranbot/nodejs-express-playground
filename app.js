@@ -3,12 +3,13 @@ const session = require('express-session')
 const mongoose = require('mongoose')
 const path = require('path')
 const MongoDBStore = require('connect-mongodb-session')(session)
+const csrf = require('csurf')
 
+const User = require('./models/user')
 const adminRoutes = require('./routes/admin')
 const shopRoutes = require('./routes/shop')
 const authRoutes = require('./routes/auth')
 const errorRoutes = require('./routes/error')
-const User = require('./models/user')
 const MONGO_DB_URI = 'mongodb://nodejs:nodejs@mongo:27017'
 
 const app = express()
@@ -17,6 +18,7 @@ const store = new MongoDBStore({
   collection: 'sessions',
   databaseName: 'shop'
 })
+const csrfProtection = csrf()
 
 // setting up template engine
 app.set('view engine', 'ejs')
@@ -30,6 +32,27 @@ app.use(session({
   saveUninitialized: false,
   store
 }))
+app.use(csrfProtection)
+
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn
+  res.locals.csrfToken = req.csrfToken()
+  next()
+})
+
+app.use((req, res, next) => {
+  if (!req.session.user) {
+    return next()
+  }
+  User.findById(req.session.user._id)
+    .then(user => {
+      if (user) {
+        req.user = user
+      }
+      return next()
+    })
+    .catch(err => console.log(err))
+})
 
 app.use('/admin', adminRoutes)
 app.use(shopRoutes)

@@ -29,6 +29,7 @@ exports.postLogin = (req, res, next) => {
         if (result) {
           req.session.isLoggedIn = true
           req.session.user = user
+          req.user = user
           return req.session.save(err => {
             if (err) {
               console.log(err)
@@ -42,11 +43,6 @@ exports.postLogin = (req, res, next) => {
         console.log(err)
         return res.redirect('login')
       })
-    })
-    .then(user => {
-      req.session.isLoggedIn = true
-      req.session.user = user
-      
     })
     .catch(err => console.log(err))
 }
