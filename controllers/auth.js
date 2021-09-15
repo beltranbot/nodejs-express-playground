@@ -20,7 +20,7 @@ exports.postLogin = (req, res, next) => {
   User.findOne()
     .then(user => {
       if (!user) {
-        let user = new User({
+        user = new User({
           username: 'admin',
           email: 'admin@example.com',
           cart: {
@@ -45,7 +45,23 @@ exports.postLogin = (req, res, next) => {
 }
 
 exports.postSignup = (req, res, next) => {
-  
+  const { email, password, confirmPassword } = req.body
+  User.findOne({ email })
+    .then(user => {
+      if (user) {
+        return res.redirect('/')
+      }
+      user = new User({
+        email,
+        password,
+        cart: { items: [] }
+      })
+      return user.save()
+    })
+    .then(user => {
+      res.redirect('/')
+    })
+    .catch(err => console.log(err))
 }
 
 exports.postLogout = (req, res, next) => {
