@@ -18,29 +18,35 @@ exports.getSignup = (req, res, next) => {
 }
 
 exports.postLogin = (req, res, next) => {
-  User.findOne()
+  const { email, password } = req.body
+  User.findOne({ email })
     .then(user => {
       if (!user) {
-        user = new User({
-          username: 'admin',
-          email: 'admin@example.com',
-          cart: {
-            items: []
-          }
-        })
-        return user.save()
+        return res.redirect('/login')
       }
-      return user
+      bcrypt.compare(password, user.password)
+      .then(result => {
+        if (result) {
+          req.session.isLoggedIn = true
+          req.session.user = user
+          return req.session.save(err => {
+            if (err) {
+              console.log(err)
+            }
+            return res.redirect('/')
+          })
+        }
+        return res.redirect('/login')
+      })
+      .catch(err => {
+        console.log(err)
+        return res.redirect('login')
+      })
     })
     .then(user => {
       req.session.isLoggedIn = true
       req.session.user = user
-      req.session.save(err => {
-        if (err) {
-          console.log(err)
-        }
-        res.redirect('/')
-      })
+      
     })
     .catch(err => console.log(err))
 }
