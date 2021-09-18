@@ -9,7 +9,12 @@ exports.getLogin = (req, res, next) => {
     path: '/login',
     pageTitle: 'Login',
     isAuthenticated: req.session.isLoggedIn,
-    errors
+    errors,
+    oldInput: {
+      email: '',
+      password: ''
+    },
+    validationErrors: []
   })
 }
 
@@ -37,7 +42,9 @@ exports.postLogin = (req, res, next) => {
       path: '/login',
       pageTitle: 'Login',
       isAuthenticated: req.session.isLoggedIn,
-      errors: errors.mapped()
+      errors: errors.mapped(),
+      oldInput: { email, password },
+      validationErrors: errors.array()
     })
   }
   User.findOne({ email })
