@@ -24,7 +24,8 @@ exports.getSignup = (req, res, next) => {
       email: '',
       password: '',
       confirmPassword: ''
-    }
+    },
+    validationErrors: []
   })
 }
 
@@ -76,7 +77,8 @@ exports.postSignup = (req, res, next) => {
       path: '/signup',
       pageTitle: 'Sigup',
       errors: errors.mapped(),
-      oldInput: { email, password, confirmPassword }
+      oldInput: { email, password, confirmPassword },
+      validationErrors: errors.array()
     })
   }
   bcrypt.hash(password, 12)
