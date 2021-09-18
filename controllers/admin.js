@@ -1,11 +1,15 @@
 const Product = require('../models/product')
+const { validationResult } = require('express-validator')
 
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
     path: '/admin/add-product',
     editing: false,
-    isAuthenticated: req.session.isLoggedIn
+    hasError: false,
+    errors: {},
+    isAuthenticated: req.session.isLoggedIn,
+    validationErrors: []
   })
 }
 
@@ -14,6 +18,19 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    return res.status(422).render('admin/edit-product', {
+      pageTitle: 'Add Product',
+      path: '/admin/add-product',
+      editing: false,
+      isAuthenticated: req.session.isLoggedIn,
+      errors: errors.mapped(),
+      hasError: true,
+      validationErrors: errors.array(),
+      product: { title, imageUrl, price, description },
+    })
+  }
   const product = new Product({
     title,
     imageUrl,
@@ -21,7 +38,7 @@ exports.postAddProduct = (req, res, next) => {
     description,
     userId: req.session.user
   })
-  product.save()
+  return product.save()
     .then(() => {
       res.redirect('/admin/products')
     }).catch(err => console.log(err))
@@ -42,8 +59,11 @@ exports.getEditProduct = (req, res, next) => {
         pageTitle: 'Edit Product',
         path: '/admin/edit-product',
         editing: editMode,
+        errors: {},
         product,
-        isAuthenticated: req.session.isLoggedIn
+        isAuthenticated: req.session.isLoggedIn,
+        hasError: false,
+        validationErrors: []
       })
     })
     .catch(err => console.log(err))
@@ -55,6 +75,25 @@ exports.postEditProduct = (req, res, next) => {
   const price = req.body.price
   const description = req.body.description
   const imageUrl = req.body.imageUrl
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    return res.render('admin/edit-product', {
+      pageTitle: 'Edit Product',
+      path: '/admin/edit-product',
+      editing: true,
+      errors: errors.mapped(),
+      product: {
+        title,
+        price,
+        description,
+        imageUrl,
+        _id: productId
+      },
+      isAuthenticated: req.session.isLoggedIn,
+      hasError: true,
+      validationErrors: errors.array()
+    })
+  }
   Product.findById(productId)
     .then(product => {
       if (product.userId.toString() !== req.user._id.toString()) {
