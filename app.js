@@ -61,9 +61,16 @@ app.use(shopRoutes)
 app.use(authRoutes)
 app.use(errorRoutes)
 
-mongoose.connect(MONGO_DB_URI, { dbName: 'shop' })
+const startApp = () => {
+  mongoose.connect(MONGO_DB_URI, { dbName: 'shop' })
   .then(result => {
     console.log('connected to db')
     app.listen(3000)
   })
-  .catch(err => console.log(err))
+  .catch(err => {
+    console.log("Failed to connect to db, retrying in 10 seconds...");
+    setTimeout(startApp, 10000);
+  })
+}
+
+startApp();
