@@ -65,6 +65,7 @@ const startApp = () => {
   mongoose.connect(MONGO_DB_URI, { dbName: 'shop' })
   .then(result => {
     console.log('connected to db')
+    console.log('listening to port 3000')
     app.listen(3000)
   })
   .catch(err => {
