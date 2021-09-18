@@ -86,7 +86,6 @@ exports.getProducts = (req, res, next) => {
 
 exports.deleteProduct = (req, res, next) => {
   const productId = req.body.productId
-  // Product.findByIdAndDelete(productId)
   Product.deleteOne({ _id: productId, userId: req.user._id })
     .then(() => res.redirect('/admin/products'))
     .catch(err => console.log(err))

@@ -3,12 +3,13 @@ const { validationResult } = require('express-validator')
 const User = require('../models/user')
 
 exports.getLogin = (req, res, next) => {
-  let error = req.flash('error')
+  let errors = req.flash('error')
+  errors = errors.length > 0 ? { error: { msg: errors[0] } } : null;
   res.render('auth/login', {
     path: '/login',
     pageTitle: 'Login',
     isAuthenticated: req.session.isLoggedIn,
-    errorMessage: error.length > 0 ? error : null
+    errors
   })
 }
 
@@ -18,40 +19,53 @@ exports.getSignup = (req, res, next) => {
     path: '/signup',
     pageTitle: 'Signup',
     isAuthenticated: false,
-    errorMessage: error.length > 0 ? error : null
+    errors: error.length > 0 ? error : null,
+    oldInput: {
+      email: '',
+      password: '',
+      confirmPassword: ''
+    }
   })
 }
 
 exports.postLogin = (req, res, next) => {
   const { email, password } = req.body
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    return res.render('auth/login', {
+      path: '/login',
+      pageTitle: 'Login',
+      isAuthenticated: req.session.isLoggedIn,
+      errors: errors.mapped()
+    })
+  }
   User.findOne({ email })
     .then(user => {
       if (!user) {
         req.flash('error', 'Invalid email or password')
         return res.redirect('/login')
       }
-      bcrypt.compare(password, user.password)
-      .then(result => {
-        if (result) {
-          req.session.isLoggedIn = true
-          req.session.user = user
-          req.user = user
-          return req.session.save(err => {
-            if (err) {
-              console.log(err)
-            }
-            return res.redirect('/')
-          })
-        }
-        req.flash('error', 'Invalid email or password')
-        return res.redirect('/login')
-      })
-      .catch(err => {
-        console.log(err)
-        return res.redirect('login')
-      })
+      return bcrypt.compare(password, user.password)
+        .then(result => {
+          if (result) {
+            req.session.isLoggedIn = true
+            req.session.user = user
+            req.user = user
+            return req.session.save(err => {
+              if (err) {
+                console.log(err)
+              }
+              return res.redirect('/')
+            })
+          }
+          req.flash('error', 'Invalid email or password')
+          return res.redirect('/login')
+        })
+        .catch(err => {
+          console.log(err)
+          return res.redirect('/login')
+        })
     })
-    .catch(err => console.log(err))
 }
 
 exports.postSignup = (req, res, next) => {
@@ -61,24 +75,18 @@ exports.postSignup = (req, res, next) => {
     return res.status(422).render('auth/signup', {
       path: '/signup',
       pageTitle: 'Sigup',
-      errorMessage: errors.array()[0].msg
+      errors: errors.mapped(),
+      oldInput: { email, password, confirmPassword }
     })
   }
-  User.findOne({ email })
-    .then(user => {
-      if (user) {
-        req.flash('error', 'Email already registered.')
-        return res.redirect('/signup')
-      }
-      return bcrypt.hash(password, 12)
-      .then(password => {
-        const user = new User({
-          email,
-          password,
-          cart: { items: [] }
-        })
-        return user.save()
+  bcrypt.hash(password, 12)
+    .then(password => {
+      const user = new User({
+        email,
+        password,
+        cart: { items: [] }
       })
+      return user.save()
     })
     .then(user => {
       res.redirect('/')
